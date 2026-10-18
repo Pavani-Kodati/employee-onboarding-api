@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Onboarding</title>
+</head>
+<body>
+<h1>Employee Onboarding</h1>
+
+<h2>Add Employee</h2>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<input id="department" placeholder="Department">
+<button onclick="addEmployee()">Add</button>
+
+<h2>Employees</h2>
+<ul id="list"></ul>
+
+<script>
+    function loadEmployees() {
+        fetch('/employees')
+            .then(response => response.json())
+            .then(employees => {
+                const list = document.getElementById('list');
+                list.innerHTML = '';
+                employees.forEach(e => {
+                    const item = document.createElement('li');
+                    item.textContent = e.id + ' - ' + e.name + ' (' + e.email + ', ' + e.department + ')';
+                    list.appendChild(item);
+                });
+            });
+    }
+
+    function addEmployee() {
+        const dto = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            department: document.getElementById('department').value
+        };
+        fetch('/employees', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dto)
+        }).then(() => {
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('department').value = '';
+            loadEmployees();
+        });
+    }
+
+    loadEmployees();
+</script>
+</body>
+</html>
